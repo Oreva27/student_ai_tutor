@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +9,17 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from app.gemini import generate_gemini_response
 import uuid
+
+# ✅ Load .env file (for your Google API key)
+print("🔹 Loading .env file...")
+load_dotenv()
+
+# ✅ Check if the API key is found
+if os.getenv("GOOGLE_API_KEY"):
+    print("✅ GOOGLE_API_KEY found!")
+else:
+    print("⚠️ GOOGLE_API_KEY not found in .env file!")
+
 
 app = FastAPI(title="Gemini Chatbot API")
 
