@@ -1,167 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-  <script src="/static/script.js"></script>
-  <title>SciSpark</title>
-  <style>
-    /* ======= RESET ======= */
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background-color: #0e0f1a;
-      color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ======= CONTAINER ======= */
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      background: #1b1d2b;
-      width: 95%;
-      max-width: 700px;
-      height: 90vh;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 255, 224, 0.1);
-      overflow: hidden;
-    }
-
-    .chat-header {
-      background: linear-gradient(90deg, #00ffe0, #00cfcf);
-      color: #0e0f1a;
-      text-align: center;
-      padding: 1rem;
-      font-weight: bold;
-      font-size: 1.3rem;
-    }
-
-    /* ======= CHAT BOX ======= */
-    #chat-box {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      scroll-behavior: smooth;
-    }
-
-    /* ======= MESSAGE BUBBLES ======= */
-    .message {
-      max-width: 80%;
-      padding: 0.8rem 1rem;
-      border-radius: 18px;
-      line-height: 1.4;
-      word-wrap: break-word;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    .user {
-      align-self: flex-end;
-      background: #00ffe0;
-      color: #0e0f1a;
-      border-bottom-right-radius: 4px;
-    }
-
-    .bot {
-      align-self: flex-start;
-      background: #2b2d3d;
-      border: 1px solid #00ffe0;
-      border-bottom-left-radius: 4px;
-    }
-
-    .message:hover {
-      transform: scale(1.02);
-      background-color: #2b2f44;
-    }
-
-    /* ======= INPUT AREA ======= */
-    .chat-input {
-      display: flex;
-      border-top: 1px solid #2b2f44;
-      background: #151724;
-      padding: 0.7rem;
-    }
-
-    .chat-input input {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      color: #fff;
-      padding: 0.7rem;
-      font-size: 1rem;
-    }
-
-    .chat-input button {
-      background: #00ffe0;
-      color: #0e0f1a;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      padding: 0.6rem 1rem;
-      margin-left: 0.5rem;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .chat-input button:hover {
-      background: #00cfcf;
-    }
-
-    /* ======= SCROLLBAR ======= */
-    #chat-box::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    #chat-box::-webkit-scrollbar-thumb {
-      background: #00ffe0;
-      border-radius: 4px;
-    }
-
-    #chat-box::-webkit-scrollbar-track {
-      background: #151724;
-    }
-
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EduSpark — Smart Learning</title>
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
+
 <body>
-  <div class="chat-wrapper">
-  <div class="history-panel" id="history-panel"></div> <!-- Sidebar -->
-  <div class="chat-container">
-    <div id="chat-box"></div>
-    <div class="chat-input">
-      <input type="text" id="message" placeholder="Ask a science question..." />
-      <button id="send-btn">Send</button>
-      <button id="reset-btn">Reset</button>
+  <div class="app">
+
+    <!-- =============== SIDEBAR (Desktop & Tablet) =============== -->
+    <aside class="sidebar" id="history-panel" aria-label="Chat history">
+      
+      <!-- Logo -->
+     <div class="brand">
+    <div class="tag" style="font-size: 1.2rem; font-weight: 700;">
+        Smart Learning
+    </div>
+</div>
+
+
+      <!-- Sidebar Action Buttons -->
+      <div class="sidebar-actions">
+
+        <button id="btn-new-chat" class="sidebar-btn">➕ New Chat</button>
+
+        <button id="btn-search-chats" class="sidebar-btn">🔍 Search Chats</button>
+
+        <button id="btn-quiz-library" class="sidebar-btn">📚 Quiz Library</button>
+
+        <button id="btn-projects" class="sidebar-btn">📁 Projects</button>
+
+      </div>
+
+      <!-- Chat History -->
+      <div class="history-header">
+        <div class="title">Chats</div>
+      </div>
+
+      <div id="history-content" class="history-content"></div>
+
+    </aside>
+
+    <!-- =============== MAIN =============== -->
+    <main class="main">
+
+      <!-- ONE UNIVERSAL TOPBAR (MOBILE + DESKTOP COMBINED) -->
+      <header class="topbar">
+        
+        <!-- App brand -->
+        <a href="/" class="app-title">
+          <img src="https://cdn.pixabay.com/photo/2020/07/11/12/31/idea-5393862_1280.png"
+              class="top-logo"
+              alt="Logo"
+              onerror="this.style.display='none'">
+          <span class="app-name">EduSpark</span>
+        </a>
+
+        <!-- Right-side share icon -->
+        <button id="share-btn" class="icon-btn" title="Share last reply">🔗</button>
+
+      </header>
+
+      <!-- CHAT AREA -->
+      <section id="chat-box" class="chat-box" aria-live="polite"></section>
+
+      <!-- INPUT BAR -->
+      <form id="input-form" class="input-bar" autocomplete="off">
+        <input id="message" name="message" type="text"
+              placeholder="Ask a science question..." autocomplete="off" />
+        <button id="send-btn" type="submit" class="primary-btn">Send</button>
+      </form>
+
+    </main>
+
+  </div>
+
+  <!-- SEARCH OVERLAY -->
+  <div id="search-overlay" class="search-overlay hidden">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search chats..." />
+      <button id="close-search">✖</button>
     </div>
   </div>
-</div>
-  <div id="app-container">
-  <aside id="history-panel">
-    <button id="toggle-history-btn" class="toggle-btn">☰</button>
-  </aside>
 
-  <main id="chat-container">
-    <div id="chat-box"></div>
-    <div class="input-area">
-      <input id="message" type="text" placeholder="Type your message..." />
-      <button id="send-btn">Send</button>
-      <button id="reset-btn">New Chat</button>
-    </div>
-  </main>
-</div>
-  <script src="script.js"></script>
+  <script src="/static/script.js" defer></script>
 </body>
 </html>

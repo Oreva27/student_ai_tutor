@@ -1,119 +1,125 @@
 document.addEventListener("DOMContentLoaded", async () => {
+
+  /* =========================================================
+       ELEMENTS
+  ========================================================== */
   const chatBox = document.getElementById("chat-box");
   const messageInput = document.getElementById("message");
   const sendBtn = document.getElementById("send-btn");
-  const resetBtn = document.getElementById("reset-btn");
   const historyPanel = document.getElementById("history-panel");
-  const toggleHistoryBtn = document.getElementById("toggle-history-btn");
 
-  const CHAT_SESSIONS_KEY = "sciSparkChatSessions";
+  const btnNewChat = document.getElementById("btn-new-chat");
+  const btnSearchChats = document.getElementById("btn-search-chats");
+  const btnQuizLibrary = document.getElementById("btn-quiz-library");
+  const btnProjects = document.getElementById("btn-projects");
+
+  const openMenuBtn = document.getElementById("open-menu");
+  const shareBtn = document.getElementById("share-btn");
+  const shareBtnMobile = document.getElementById("share-btn-mobile");
+
+  const searchOverlay = document.getElementById("search-overlay");
+  const searchInput = document.getElementById("search-input");
+  const closeSearchBtn = document.getElementById("close-search");
+
+  /* =========================================================
+       CHAT SESSION SYSTEM
+  ========================================================== */
+  const CHAT_SESSIONS_KEY = "EduSparkChatSessions";
   let sessions = JSON.parse(localStorage.getItem(CHAT_SESSIONS_KEY)) || {};
+
   let currentSessionId = generateSessionId();
 
-  // Initialize session
   if (!sessions[currentSessionId]) {
     sessions[currentSessionId] = [];
-    showWelcomeMessage(); // 🟢 Auto message for first session
+    showWelcomeMessage();
   }
 
   renderHistoryPanel();
-  renderChat(currentSessionId);
 
-  // === Generate unique session ID ===
   function generateSessionId() {
     return "session_" + Date.now();
   }
 
-  // === Render messages for a given session ===
+  /* =========================================================
+       RENDER CHAT
+  ========================================================== */
   function renderChat(sessionId) {
     chatBox.innerHTML = "";
     const chatHistory = sessions[sessionId] || [];
+
     chatHistory.forEach(msg => addMessage(msg.sender, msg.text));
   }
 
-  // === Render message bubble ===
   function addMessage(sender, text) {
     const msgDiv = document.createElement("div");
     msgDiv.classList.add("message", sender);
 
     const bubble = document.createElement("div");
     bubble.classList.add("bubble");
-    bubble.textContent = text;
+
+    // Detect HTML for formatted output
+    if (/<[a-z][\s\S]*>/i.test(text)) {
+      bubble.innerHTML = text;
+    } else {
+      bubble.textContent = text;
+    }
 
     msgDiv.appendChild(bubble);
     chatBox.appendChild(msgDiv);
 
-    msgDiv.addEventListener("mouseenter", () => {
-      msgDiv.style.transform = "scale(1.02)";
-      msgDiv.style.transition = "transform 0.2s ease";
-    });
-    msgDiv.addEventListener("mouseleave", () => {
-      msgDiv.style.transform = "scale(1)";
-    });
-
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  // === Save message to current session ===
   function saveMessage(sender, text) {
-    if (!sessions[currentSessionId]) sessions[currentSessionId] = [];
     sessions[currentSessionId].push({ sender, text });
     localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(sessions));
-    renderHistoryPanel(); // update sidebar live
+    renderHistoryPanel();
   }
 
-  // === Render chat history sidebar on the left ===
+  /* =========================================================
+       RENDER HISTORY PANEL
+  ========================================================== */
   function renderHistoryPanel() {
-    if (!historyPanel) return;
-    historyPanel.innerHTML = "";
-    historyPanel.style.display = "flex";
-    historyPanel.style.flexDirection = "column";
-    historyPanel.style.width = "220px"; // fixed width for sidebar
-    historyPanel.style.overflowY = "auto";
-    historyPanel.style.padding = "10px";
-    historyPanel.style.borderRight = "1px solid #2b2f44";
+    const historyContent = document.getElementById("history-content");
+    historyContent.innerHTML = "";
 
     const sessionIds = Object.keys(sessions);
-    if (sessionIds.length === 0) {
-      historyPanel.innerHTML = "<p class='empty'>No previous chats</p>";
-      return;
-    }
 
-    sessionIds.forEach((id, index) => {
+    sessionIds.forEach(id => {
       const btn = document.createElement("button");
       btn.classList.add("history-item");
-const firstMsg = sessions[id].find(msg => msg.sender === "user");
-btn.textContent = firstMsg ? firstMsg.text : "New Chat";
+
+      const firstMsg = sessions[id].find(m => m.sender === "user");
+      btn.textContent = firstMsg ? firstMsg.text : "New Chat";
+
       btn.onclick = () => {
         currentSessionId = id;
         renderChat(id);
-        highlightActiveSession(id);
+        highlightActiveSession();
       };
-      historyPanel.appendChild(btn);
+
+      historyContent.appendChild(btn);
     });
 
-    highlightActiveSession(currentSessionId);
+    highlightActiveSession();
   }
 
-  // === Highlight active session ===
-  function highlightActiveSession(activeId) {
-    const buttons = historyPanel.querySelectorAll(".history-item");
-    buttons.forEach((btn, index) => {
-      btn.classList.remove("active");
-      if (btn.textContent === (sessions[activeId].find(msg => msg.sender === "user")?.text || "New Chat")) {
-  btn.classList.add("active");
-        btn.classList.add("active");
+  function highlightActiveSession() {
+    const items = document.querySelectorAll(".history-item");
+
+    items.forEach(item => {
+      item.classList.remove("active");
+
+      const firstMsg = sessions[currentSessionId].find(m => m.sender === "user");
+      if (item.textContent === (firstMsg ? firstMsg.text : "New Chat")) {
+        item.classList.add("active");
       }
     });
   }
 
-  // === Get name from session ID ===
-  function getSessionName(id) {
-    const index = Object.keys(sessions).indexOf(id);
-    return `Chat ${index + 1}`;
-  }
-
-  // === Send message ===
+  /* =========================================================
+       SENDING MESSAGE
+  ========================================================== */
   async function sendMessage() {
     const message = messageInput.value.trim();
     if (!message) return;
@@ -122,75 +128,157 @@ btn.textContent = firstMsg ? firstMsg.text : "New Chat";
     saveMessage("user", message);
     messageInput.value = "";
 
+    // Typing indicator
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "message bot typing";
+    typingDiv.textContent = "EduSpark is thinking...";
+    chatBox.appendChild(typingDiv);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+
     try {
-// ✅ Auto-detect backend URL (works for local file or hosted FastAPI)
-const backendUrl = window.location.origin.startsWith("file://")
-  ? "http://127.0.0.1:8000"   // when running index.html directly
-  : window.location.origin;   // when served by FastAPI
+      const backendUrl = window.location.origin.startsWith("file://")
+        ? "http://127.0.0.1:8000"
+        : window.location.origin;
 
-const response = await fetch(`${backendUrl}/chat`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ message, session_id: currentSessionId }),
-});
+      const response = await fetch(`${backendUrl}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          session_id: currentSessionId
+        })
+      });
 
-const data = await response.json();
-const reply = data.reply || data.response || "Local test mode active ✅";
+      const data = await response.json();
+      typingDiv.remove();
 
-      addMessage("bot", reply);
-      saveMessage("bot", reply);
-    } catch (error) {
-      const errMsg = "⚠️ Server not reachable (local test mode)";
-      addMessage("bot", errMsg);
-      saveMessage("bot", errMsg);
+      const formatted = data.html;
+      const plain = data.response || data.reply || "⚠️ No reply";
+
+      if (formatted) {
+        addMessage("bot", formatted);
+        saveMessage("bot", formatted);
+      } else {
+        addMessage("bot", plain);
+        saveMessage("bot", plain);
+      }
+
+    } catch (err) {
+      typingDiv.remove();
+      const msg = "⚠️ Server unreachable.";
+      addMessage("bot", msg);
+      saveMessage("bot", msg);
     }
   }
 
-  // === Send triggers ===
-  sendBtn.addEventListener("click", (e) => {
+  sendBtn.addEventListener("click", e => {
     e.preventDefault();
     sendMessage();
   });
 
-  messageInput.addEventListener("keypress", (e) => {
+  messageInput.addEventListener("keydown", e => {
     if (e.key === "Enter") {
       e.preventDefault();
       sendMessage();
     }
   });
 
-  // === Start new chat session ===
-  resetBtn.addEventListener("click", (e) => {
-    e.preventDefault();
+  /* =========================================================
+       NEW CHAT BUTTON
+  ========================================================== */
+  btnNewChat.addEventListener("click", () => {
     currentSessionId = generateSessionId();
     sessions[currentSessionId] = [];
-    renderChat(currentSessionId);
-    renderHistoryPanel();
     localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(sessions));
 
-    // 🟢 Auto first message for every new chat
-    showWelcomeMessage();
+    chatBox.innerHTML = "";
+    messageInput.value = "";
+
+    const p = document.createElement("div");
+    p.className = "system-msg";
+    p.textContent = "New chat started.";
+    chatBox.appendChild(p);
+
+    renderHistoryPanel();
   });
 
-  // === Toggle chat history panel (mobile friendly) ===
-  if (toggleHistoryBtn) {
-    toggleHistoryBtn.addEventListener("click", () => {
-      historyPanel.classList.toggle("open");
+  /* =========================================================
+       SEARCH CHAT (Overlay)
+  ========================================================== */
+  btnSearchChats.addEventListener("click", () => {
+    searchOverlay.classList.remove("hidden");
+    searchInput.focus();
+  });
+
+  closeSearchBtn.addEventListener("click", () => {
+    searchOverlay.classList.add("hidden");
+    searchInput.value = "";
+  });
+
+  searchInput.addEventListener("input", e => {
+    const text = e.target.value.toLowerCase();
+    const items = document.querySelectorAll(".history-item");
+
+    items.forEach(item => {
+      item.style.display =
+        item.textContent.toLowerCase().includes(text)
+          ? "block"
+          : "none";
+    });
+  });
+
+  /* =========================================================
+       MOBILE MENU
+  ========================================================== */
+  if (openMenuBtn) {
+    openMenuBtn.addEventListener("click", () => {
+      historyPanel.classList.add("open");
     });
   }
 
-  // === Auto welcome message for new sessions ===
+  document.addEventListener("click", e => {
+    if (
+      !historyPanel.contains(e.target) &&
+      !openMenuBtn.contains(e.target)
+    ) {
+      historyPanel.classList.remove("open");
+    }
+  });
+
+  /* =========================================================
+       SHARE BUTTON (Copy last bot reply)
+  ========================================================== */
+  function shareLastReply() {
+    const msgs = [...document.querySelectorAll(".message.bot .bubble")];
+    if (msgs.length === 0) return;
+
+    const last = msgs[msgs.length - 1].innerText;
+
+    navigator.clipboard.writeText(last);
+    alert("Reply copied to clipboard!");
+  }
+
+  if (shareBtn) shareBtn.addEventListener("click", shareLastReply);
+  if (shareBtnMobile) shareBtnMobile.addEventListener("click", shareLastReply);
+
+  
+
+  /* =========================================================
+       WELCOME MESSAGE
+  ========================================================== */
   function showWelcomeMessage() {
     const hour = new Date().getHours();
-    let greeting = "Hello";
 
-    if (hour < 12) greeting = "Good morning 🌞";
-    else if (hour < 18) greeting = "Good afternoon ☀️";
-    else greeting = "Good evening 🌙";
+    let greeting =
+      hour < 12 ? "Good morning 🌞"
+      : hour < 18 ? "Good afternoon ☀️"
+      : "Good evening 🌙";
 
-    const welcomeText = `${greeting}! I'm SciSpark — your AI science study companion. Ask me questions, explore concepts, or take a quiz to learn interactively. 🚀`;
+    const welcome = `${greeting}! I'm EduSpark — your science study companion. Ask me anything to begin. 🚀`;
 
-    addMessage("bot", welcomeText);
-    saveMessage("bot", welcomeText);
+    addMessage("bot", welcome);
+    saveMessage("bot", welcome);
   }
+
 });

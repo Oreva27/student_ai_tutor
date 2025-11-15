@@ -15,13 +15,13 @@ else:
 print("🔹 Configuring Gemini model...")
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# ✅ Use the Gemini 2.5 model
-model = genai.GenerativeModel("gemini-2.5-flash")
+# ✅ Use the Gemini 2.0 model
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 
 def generate_gemini_response(prompt_text: str) -> str:
     """
-    Sends text input to the Gemini 2.5 model and returns its response.
+    Sends text input to the Gemini 2.0 model and returns its response.
     """
     print("🔹 Generating response...")
     try:
