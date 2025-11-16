@@ -35,7 +35,7 @@ app.add_middleware(
 )
 
 # ✅ Add session middleware
-app.add_middleware(SessionMiddleware, secret_key="super-secret-session-key")
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "fallback-secret"))
 
 # ✅ Serve static files (CSS, JS, images, etc.)
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
@@ -111,7 +111,7 @@ async def chat_endpoint(request: Request, chat_req: ChatRequest, response: Respo
         value=session_id,
         httponly=True,
         samesite="none",
-        secure=False  # set True when deploying under HTTPS
+        secure=True  
     )
     return resp
 
