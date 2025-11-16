@@ -1,13 +1,13 @@
 services:
   - type: web
-    name: student-ai-tutor
+    name: student-ai-tutor   # Change this to your app's name
     env: python
     plan: free
-    region: frankfurt
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
-    autoDeploy: true
+    pythonVersion: 3.12.16
+    buildCommand: |
+      python -m pip install --upgrade pip setuptools wheel
+      pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: GOOGLE_API_KEY
-        sync: false
-pythonVersion: 3.11
+      - key: SESSION_SECRET
+        value:AIzaSyBx-wKFxsPCWBCaBhbpy7fhU3-5WFYq18w
