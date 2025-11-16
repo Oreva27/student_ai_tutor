@@ -1,13 +1,16 @@
 services:
   - type: web
-    name: student-ai-tutor   # Change this to your app's name
+    name: student-ai-tutor
     env: python
     plan: free
-    pythonVersion: 3.12.16
+    pythonVersion: 3.12.4
+
     buildCommand: |
-      python -m pip install --upgrade pip setuptools wheel
+      pip install --upgrade pip setuptools wheel
       pip install -r requirements.txt
+
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
     envVars:
       - key: SESSION_SECRET
-        value:AIzaSyBx-wKFxsPCWBCaBhbpy7fhU3-5WFYq18w
+        value:Vh3s!28nf9@kLmPqZrT0w9F8X2s
