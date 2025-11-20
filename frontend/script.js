@@ -239,92 +239,101 @@ document.addEventListener("DOMContentLoaded", async () => {
   /* =========================================================
        SENDING MESSAGE
   ========================================================== */
-  async function sendMessage() {
-    const message = messageInput.value.trim();
-    if (!message) return;
+async function sendMessage() {
+  const message = messageInput.value.trim();
+  if (!message) return;
 
-    addMessage("user", message);
-    saveMessage("user", message);
-    messageInput.value = "";
-
-    // Auto-resize textarea
-    messageInput.style.height = 'auto';
-    // Typing indicator
-const typingDiv = document.createElement("div");
-typingDiv.className = "message bot-message typing";
-
-const avatarDiv = document.createElement("div");
-avatarDiv.classList.add("avatar", "bot-avatar");
-avatarDiv.textContent = "EB";
-
-const contentDiv = document.createElement("div");
-contentDiv.classList.add("message-content");
-
-const textDiv = document.createElement("div");
-textDiv.classList.add("message-text");
-textDiv.textContent = "EduSpark is thinking...";
-
-contentDiv.appendChild(textDiv);
-typingDiv.appendChild(avatarDiv);
-typingDiv.appendChild(contentDiv);
-chatBox.appendChild(typingDiv);
-
-chatBox.scrollTop = chatBox.scrollHeight;
-
-try {
-  const backendUrl = window.location.origin.startsWith("file://")
-    ? "http://127.0.0.1:8000"
-    : window.location.origin;
-
-  const response = await fetch(`${backendUrl}/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message,
-      session_id: currentSessionId
-    })
-  });
-
-  const data = await response.json();
-  
-  // UPDATE THE TYPING INDICATOR INSTEAD OF REMOVING IT
-  const formatted = data.html;
-  const plain = data.response || data.reply || "⚠️ No reply";
-  const finalResponse = formatted || plain;
-
-  // Update the typing indicator with the actual response
-  textDiv.innerHTML = /<[a-z][\s\S]*>/i.test(finalResponse) ? finalResponse : finalResponse;
-  typingDiv.classList.remove("typing");
-  
-  saveMessage("bot", finalResponse);
-
-} catch (err) {
-  // Update typing indicator with error message
-  textDiv.textContent = "⚠️ Server unreachable.";
-  typingDiv.classList.remove("typing");
-  saveMessage("bot", "⚠️ Server unreachable.");
-}
-
-     }
-
-  sendBtn.addEventListener("click", e => {
-    e.preventDefault();
-    sendMessage();
-  });
-
-  messageInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
+  addMessage("user", message);
+  saveMessage("user", message);
+  messageInput.value = "";
 
   // Auto-resize textarea
-  messageInput.addEventListener("input", function() {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-  });
+  messageInput.style.height = 'auto';
 
+  // Typing indicator
+  const typingDiv = document.createElement("div");
+  typingDiv.className = "message bot-message";
+  typingDiv.style.display = 'flex';
+  
+  const avatarDiv = document.createElement("div");
+  avatarDiv.classList.add("avatar", "bot-avatar");
+  avatarDiv.textContent = "EB";
+
+  const contentDiv = document.createElement("div");
+  contentDiv.className = "message-content";
+
+  const textDiv = document.createElement("div");
+  textDiv.classList.add("message-text");
+  textDiv.textContent = "EduSpark is thinking...";
+
+  contentDiv.appendChild(textDiv);
+  typingDiv.appendChild(avatarDiv);
+  typingDiv.appendChild(contentDiv);
+  chatBox.appendChild(typingDiv);
+
+  // Force Chrome reflow
+  void typingDiv.offsetHeight;
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  try {
+    const backendUrl = window.location.origin.startsWith("file://")
+      ? "http://127.0.0.1:8000"
+      : window.location.origin;
+
+    const response = await fetch(`${backendUrl}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message,
+        session_id: currentSessionId
+      })
+    });
+
+    const data = await response.json();
+
+    const formatted = data.html;
+    const plain = data.response || data.reply || "⚠️ No reply";
+    const finalResponse = formatted || plain;
+
+    // Update the typing indicator with the actual response
+    setTimeout(() => {
+      if (/<[a-z][\s\S]*>/i.test(finalResponse)) {
+        textDiv.innerHTML = finalResponse;
+      } else {
+        textDiv.textContent = finalResponse;
+      }
+      // Force Chrome repaint
+      void textDiv.offsetHeight;
+    }, 0);
+
+    saveMessage("bot", finalResponse);
+
+  } catch (err) {
+    setTimeout(() => {
+      textDiv.textContent = "⚠️ Server unreachable.";
+      void textDiv.offsetHeight;
+    }, 0);
+    saveMessage("bot", "⚠️ Server unreachable.");
+  }
+}
+
+sendBtn.addEventListener("click", e => {
+  e.preventDefault();
+  sendMessage();
+});
+
+messageInput.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// Auto-resize textarea
+messageInput.addEventListener("input", function() {
+  this.style.height = 'auto';
+  this.style.height = (this.scrollHeight) + 'px';
+});
   /* =========================================================
        NEW CHAT BUTTON
   ========================================================== */
