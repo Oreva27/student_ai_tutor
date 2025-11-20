@@ -5,73 +5,173 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>EduSpark — Smart Learning</title>
   <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
   <div class="app">
 
+    <!-- =============== MOBILE OVERLAY =============== -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- =============== SIDEBAR (Desktop & Tablet) =============== -->
     <aside class="sidebar" id="history-panel" aria-label="Chat history">
       
-      <!-- Logo -->
-     <div class="brand">
-    <div class="tag" style="font-size: 1.2rem; font-weight: 700;">
-        Smart Learning
-    </div>
-</div>
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <button class="new-chat-btn" id="btn-new-chat">
+          <i class="fas fa-plus"></i>
+          <span>New Chat</span>
+        </button>
+      </div>
 
+      <!-- Logo -->
+      <div class="brand">
+        <div class="tag">Smart Learning</div>
+      </div>
 
       <!-- Sidebar Action Buttons -->
       <div class="sidebar-actions">
+        <button id="btn-search-chats" class="sidebar-btn">
+          <i class="fas fa-search"></i> Search Chats
+        </button>
 
-        <button id="btn-new-chat" class="sidebar-btn">➕ New Chat</button>
+        <button id="btn-quiz-library" class="sidebar-btn">
+          <i class="fas fa-book"></i> Quiz Library
+        </button>
 
-        <button id="btn-search-chats" class="sidebar-btn">🔍 Search Chats</button>
-
-        <button id="btn-quiz-library" class="sidebar-btn">📚 Quiz Library</button>
-
-        <button id="btn-projects" class="sidebar-btn">📁 Projects</button>
-
+        <button id="btn-projects" class="sidebar-btn">
+          <i class="fas fa-folder"></i> Projects
+        </button>
       </div>
 
       <!-- Chat History -->
-      <div class="history-header">
-        <div class="title">Chats</div>
+      <div class="history-section">
+        <div class="history-date">Today</div>
+        <div class="history-item">
+          <i class="fas fa-comment"></i>
+          <span>Science Questions Discussion</span>
+        </div>
+        <div class="history-item">
+          <i class="fas fa-comment"></i>
+          <span>Math Problem Solving</span>
+        </div>
+        
+        <div class="history-date">Yesterday</div>
+        <div class="history-item">
+          <i class="fas fa-comment"></i>
+          <span>History Lesson Review</span>
+        </div>
       </div>
 
-      <div id="history-content" class="history-content"></div>
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div>EduSpark v1.0</div>
+        <div>Smart Learning Assistant</div>
+      </div>
 
     </aside>
 
     <!-- =============== MAIN =============== -->
     <main class="main">
 
-      <!-- ONE UNIVERSAL TOPBAR (MOBILE + DESKTOP COMBINED) -->
-      <header class="topbar">
+      <!-- MOBILE TOPBAR -->
+      <header class="mobile-topbar">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+          <i class="fas fa-bars"></i>
+        </button>
         
-        <!-- App brand -->
-        <a href="/" class="app-title">
+        <div class="app-title">
           <img src="https://cdn.pixabay.com/photo/2020/07/11/12/31/idea-5393862_1280.png"
               class="top-logo"
               alt="Logo"
               onerror="this.style.display='none'">
           <span class="app-name">EduSpark</span>
-        </a>
+        </div>
 
-        <!-- Right-side share icon -->
-        <button id="share-btn" class="icon-btn" title="Share last reply">🔗</button>
-
+        <button id="mobile-share-btn" class="icon-btn" title="Share last reply">
+          <i class="fas fa-share"></i>
+        </button>
       </header>
 
+      <!-- DESKTOP TOPBAR -->
+      <header class="topbar desktop-topbar">
+        <div class="app-title">
+          <img src="https://cdn.pixabay.com/photo/2020/07/11/12/31/idea-5393862_1280.png"
+              class="top-logo"
+              alt="Logo"
+              onerror="this.style.display='none'">
+          <span class="app-name">EduSpark</span>
+        </div>
+
+        <div class="chat-actions">
+          <button class="action-btn" title="Settings">
+            <i class="fas fa-cog"></i>
+          </button>
+          <button class="action-btn" title="User">
+            <i class="fas fa-user"></i>
+          </button>
+          <button id="share-btn" class="action-btn" title="Share last reply">
+            <i class="fas fa-share"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- WELCOME SCREEN -->
+      <div class="welcome-screen" id="welcome-screen">
+        <h1 class="welcome-title">EduSpark - Your Smart Learning Assistant</h1>
+        <p class="welcome-subtitle">I can help you with educational content, answer questions, explain concepts, and assist with your learning journey.</p>
+        
+        <div class="suggestions">
+          <div class="suggestion-card" data-suggestion="Explain quantum physics in simple terms">
+            <div class="suggestion-title">
+              <i class="fas fa-atom"></i>
+              Science Help
+            </div>
+            <div class="suggestion-desc">Explain complex scientific concepts in simple terms</div>
+          </div>
+          <div class="suggestion-card" data-suggestion="Help me solve this math problem: 2x + 5 = 15">
+            <div class="suggestion-title">
+              <i class="fas fa-calculator"></i>
+              Math Assistance
+            </div>
+            <div class="suggestion-desc">Get step-by-step solutions to math problems</div>
+          </div>
+          <div class="suggestion-card" data-suggestion="What are the key events of World War II?">
+            <div class="suggestion-title">
+              <i class="fas fa-landmark"></i>
+              History Facts
+            </div>
+            <div class="suggestion-desc">Explore historical events and their significance</div>
+          </div>
+          <div class="suggestion-card" data-suggestion="How to improve my essay writing skills?">
+            <div class="suggestion-title">
+              <i class="fas fa-pen-fancy"></i>
+              Writing Tips
+            </div>
+            <div class="suggestion-desc">Improve your writing with helpful guidance</div>
+          </div>
+        </div>
+      </div>
+
       <!-- CHAT AREA -->
-      <section id="chat-box" class="chat-box" aria-live="polite"></section>
+      <section id="chat-box" class="chat-box" aria-live="polite" style="display: none;"></section>
 
       <!-- INPUT BAR -->
-      <form id="input-form" class="input-bar" autocomplete="off">
-        <input id="message" name="message" type="text"
-              placeholder="Ask a science question..." autocomplete="off" />
-        <button id="send-btn" type="submit" class="primary-btn">Send</button>
-      </form>
+      <div class="input-container">
+        <div class="input-box">
+          <textarea id="message" name="message" class="message-input" 
+                placeholder="Ask a science question..." rows="1"></textarea>
+          <button id="send-btn" type="button" class="send-button">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div class="input-actions">
+          <button class="input-action"><i class="fas fa-lightbulb"></i> Examples</button>
+          <button class="input-action"><i class="fas fa-wand-magic-sparkles"></i> Capabilities</button>
+          <button class="input-action"><i class="fas fa-ban"></i> Limitations</button>
+        </div>
+      </div>
 
     </main>
 
