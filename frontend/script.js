@@ -7,19 +7,77 @@ document.addEventListener("DOMContentLoaded", async () => {
   const messageInput = document.getElementById("message");
   const sendBtn = document.getElementById("send-btn");
   const historyPanel = document.getElementById("history-panel");
+  const welcomeScreen = document.getElementById("welcome-screen");
 
   const btnNewChat = document.getElementById("btn-new-chat");
   const btnSearchChats = document.getElementById("btn-search-chats");
   const btnQuizLibrary = document.getElementById("btn-quiz-library");
   const btnProjects = document.getElementById("btn-projects");
 
-  const openMenuBtn = document.getElementById("open-menu");
+  const menuToggle = document.getElementById("menu-toggle");
   const shareBtn = document.getElementById("share-btn");
-  const shareBtnMobile = document.getElementById("share-btn-mobile");
+  const mobileShareBtn = document.getElementById("mobile-share-btn");
+  const sidebarOverlay = document.getElementById("sidebar-overlay");
 
   const searchOverlay = document.getElementById("search-overlay");
   const searchInput = document.getElementById("search-input");
   const closeSearchBtn = document.getElementById("close-search");
+
+  /* =========================================================
+       MOBILE TOGGLE FUNCTIONALITY
+  ========================================================== */
+  function initMobileToggle() {
+    if (menuToggle && historyPanel && sidebarOverlay) {
+      // Toggle sidebar
+      menuToggle.addEventListener('click', function() {
+        historyPanel.classList.toggle('open');
+        sidebarOverlay.classList.toggle('active');
+      });
+      
+      // Close sidebar when clicking overlay
+      sidebarOverlay.addEventListener('click', function() {
+        historyPanel.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+      });
+      
+      // Close sidebar when clicking on a history item (mobile)
+      const historyItems = document.querySelectorAll('.history-item');
+      historyItems.forEach(item => {
+        item.addEventListener('click', function() {
+          if (window.innerWidth <= 850) {
+            historyPanel.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+          }
+        });
+      });
+
+      // Close sidebar when starting a new chat (mobile)
+      if (btnNewChat) {
+        btnNewChat.addEventListener('click', function() {
+          if (window.innerWidth <= 850) {
+            historyPanel.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+          }
+        });
+      }
+    }
+  }
+
+  /* =========================================================
+       SUGGESTION CARDS FUNCTIONALITY
+  ========================================================== */
+  function initSuggestionCards() {
+    const suggestionCards = document.querySelectorAll('.suggestion-card');
+    suggestionCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const suggestionText = this.getAttribute('data-suggestion');
+        if (suggestionText && messageInput) {
+          messageInput.value = suggestionText;
+          sendMessage();
+        }
+      });
+    });
+  }
 
   /* =========================================================
        CHAT SESSION SYSTEM
@@ -32,6 +90,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!sessions[currentSessionId]) {
     sessions[currentSessionId] = [];
     showWelcomeMessage();
+  } else {
+    // If there's existing chat, show chat area instead of welcome screen
+    showChatArea();
+    renderChat(currentSessionId);
   }
 
   renderHistoryPanel();
@@ -41,31 +103,71 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* =========================================================
-       RENDER CHAT
+       TOGGLE WELCOME/CHAT SCREENS
+  ========================================================== */
+  function showWelcomeScreen() {
+    if (welcomeScreen) welcomeScreen.style.display = 'flex';
+    if (chatBox) chatBox.style.display = 'none';
+  }
+
+  function showChatArea() {
+    if (welcomeScreen) welcomeScreen.style.display = 'none';
+    if (chatBox) chatBox.style.display = 'flex';
+  }
+
+  /* =========================================================
+       RENDER CHAT (UPDATED FOR NEW UI)
   ========================================================== */
   function renderChat(sessionId) {
     chatBox.innerHTML = "";
     const chatHistory = sessions[sessionId] || [];
 
     chatHistory.forEach(msg => addMessage(msg.sender, msg.text));
+    showChatArea();
   }
 
   function addMessage(sender, text) {
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("message", sender);
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", `${sender}-message`);
 
-    const bubble = document.createElement("div");
-    bubble.classList.add("bubble");
+    const avatarDiv = document.createElement("div");
+    avatarDiv.classList.add("avatar", `${sender}-avatar`);
+    avatarDiv.textContent = sender === "user" ? "Y" : "EB";
+
+    const contentDiv = document.createElement("div");
+    contentDiv.classList.add("message-content");
+
+    const textDiv = document.createElement("div");
+    textDiv.classList.add("message-text");
 
     // Detect HTML for formatted output
     if (/<[a-z][\s\S]*>/i.test(text)) {
-      bubble.innerHTML = text;
+      textDiv.innerHTML = text;
     } else {
-      bubble.textContent = text;
+      textDiv.textContent = text;
     }
 
-    msgDiv.appendChild(bubble);
-    chatBox.appendChild(msgDiv);
+    const actionsDiv = document.createElement("div");
+    actionsDiv.classList.add("message-actions");
+
+    if (sender === "bot") {
+      actionsDiv.innerHTML = `
+        <button class="message-action"><i class="fas fa-thumbs-up"></i></button>
+        <button class="message-action"><i class="fas fa-thumbs-down"></i></button>
+        <button class="message-action"><i class="fas fa-copy"></i></button>
+      `;
+    } else {
+      actionsDiv.innerHTML = `
+        <button class="message-action"><i class="fas fa-pencil-alt"></i></button>
+        <button class="message-action"><i class="fas fa-copy"></i></button>
+      `;
+    }
+
+    contentDiv.appendChild(textDiv);
+    contentDiv.appendChild(actionsDiv);
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(contentDiv);
+    chatBox.appendChild(messageDiv);
 
     chatBox.scrollTop = chatBox.scrollHeight;
   }
@@ -77,28 +179,42 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* =========================================================
-       RENDER HISTORY PANEL
+       RENDER HISTORY PANEL (UPDATED)
   ========================================================== */
   function renderHistoryPanel() {
-    const historyContent = document.getElementById("history-content");
-    historyContent.innerHTML = "";
+    const historyContent = document.querySelector(".history-section");
+    if (!historyContent) return;
+
+    // Clear existing history items but keep the date headers
+    const dateHeaders = historyContent.querySelectorAll('.history-date');
+    const existingItems = historyContent.querySelectorAll('.history-item');
+    existingItems.forEach(item => item.remove());
 
     const sessionIds = Object.keys(sessions);
 
     sessionIds.forEach(id => {
-      const btn = document.createElement("button");
-      btn.classList.add("history-item");
-
       const firstMsg = sessions[id].find(m => m.sender === "user");
-      btn.textContent = firstMsg ? firstMsg.text : "New Chat";
+      const historyText = firstMsg ? 
+        (firstMsg.text.length > 30 ? firstMsg.text.substring(0, 30) + "..." : firstMsg.text) : 
+        "New Chat";
 
-      btn.onclick = () => {
+      const historyItem = document.createElement("div");
+      historyItem.classList.add("history-item");
+
+      historyItem.innerHTML = `
+        <i class="fas fa-comment"></i>
+        <span>${historyText}</span>
+      `;
+
+      historyItem.onclick = () => {
         currentSessionId = id;
         renderChat(id);
         highlightActiveSession();
       };
 
-      historyContent.appendChild(btn);
+      // Add to today's section (you might want to improve this logic)
+      const todaySection = dateHeaders[0]?.nextElementSibling || historyContent;
+      historyContent.insertBefore(historyItem, todaySection);
     });
 
     highlightActiveSession();
@@ -106,12 +222,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function highlightActiveSession() {
     const items = document.querySelectorAll(".history-item");
+    const firstMsg = sessions[currentSessionId].find(m => m.sender === "user");
+    const currentText = firstMsg ? 
+      (firstMsg.text.length > 30 ? firstMsg.text.substring(0, 30) + "..." : firstMsg.text) : 
+      "New Chat";
 
     items.forEach(item => {
       item.classList.remove("active");
-
-      const firstMsg = sessions[currentSessionId].find(m => m.sender === "user");
-      if (item.textContent === (firstMsg ? firstMsg.text : "New Chat")) {
+      const itemText = item.querySelector('span')?.textContent;
+      if (itemText === currentText) {
         item.classList.add("active");
       }
     });
@@ -128,10 +247,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     saveMessage("user", message);
     messageInput.value = "";
 
+    // Auto-resize textarea
+    messageInput.style.height = 'auto';
+
     // Typing indicator
     const typingDiv = document.createElement("div");
-    typingDiv.className = "message bot typing";
-    typingDiv.textContent = "EduSpark is thinking...";
+    typingDiv.className = "message bot-message typing";
+    
+    const avatarDiv = document.createElement("div");
+    avatarDiv.classList.add("avatar", "bot-avatar");
+    avatarDiv.textContent = "EB";
+    
+    const contentDiv = document.createElement("div");
+    contentDiv.classList.add("message-content");
+    
+    const textDiv = document.createElement("div");
+    textDiv.classList.add("message-text");
+    textDiv.textContent = "EduSpark is thinking...";
+    
+    contentDiv.appendChild(textDiv);
+    typingDiv.appendChild(avatarDiv);
+    typingDiv.appendChild(contentDiv);
     chatBox.appendChild(typingDiv);
 
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -178,10 +314,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   messageInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
+  });
+
+  // Auto-resize textarea
+  messageInput.addEventListener("input", function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
   });
 
   /* =========================================================
@@ -194,11 +336,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     chatBox.innerHTML = "";
     messageInput.value = "";
-
-    const p = document.createElement("div");
-    p.className = "system-msg";
-    p.textContent = "New chat started.";
-    chatBox.appendChild(p);
+    showWelcomeScreen();
 
     renderHistoryPanel();
   });
@@ -223,46 +361,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     items.forEach(item => {
       item.style.display =
         item.textContent.toLowerCase().includes(text)
-          ? "block"
+          ? "flex"
           : "none";
     });
-  });
-
-  /* =========================================================
-       MOBILE MENU
-  ========================================================== */
-  if (openMenuBtn) {
-    openMenuBtn.addEventListener("click", () => {
-      historyPanel.classList.add("open");
-    });
-  }
-
-  document.addEventListener("click", e => {
-    if (
-      !historyPanel.contains(e.target) &&
-      !openMenuBtn.contains(e.target)
-    ) {
-      historyPanel.classList.remove("open");
-    }
   });
 
   /* =========================================================
        SHARE BUTTON (Copy last bot reply)
   ========================================================== */
   function shareLastReply() {
-    const msgs = [...document.querySelectorAll(".message.bot .bubble")];
-    if (msgs.length === 0) return;
+    const botMessages = document.querySelectorAll(".bot-message .message-text");
+    if (botMessages.length === 0) return;
 
-    const last = msgs[msgs.length - 1].innerText;
+    const lastMessage = botMessages[botMessages.length - 1];
+    const text = lastMessage.textContent || lastMessage.innerText;
 
-    navigator.clipboard.writeText(last);
-    alert("Reply copied to clipboard!");
+    navigator.clipboard.writeText(text).then(() => {
+      // You could add a toast notification here instead of alert
+      alert("Reply copied to clipboard!");
+    }).catch(() => {
+      alert("Failed to copy to clipboard");
+    });
   }
 
   if (shareBtn) shareBtn.addEventListener("click", shareLastReply);
-  if (shareBtnMobile) shareBtnMobile.addEventListener("click", shareLastReply);
-
-  
+  if (mobileShareBtn) mobileShareBtn.addEventListener("click", shareLastReply);
 
   /* =========================================================
        WELCOME MESSAGE
@@ -277,8 +400,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const welcome = `${greeting}! I'm EduSpark — your science study companion. Ask me anything to begin. 🚀`;
 
-    addMessage("bot", welcome);
-    saveMessage("bot", welcome);
+    // Don't show welcome message in chat area, just use the welcome screen
+    showWelcomeScreen();
+  }
+
+  /* =========================================================
+       INITIALIZE EVERYTHING
+  ========================================================== */
+  initMobileToggle();
+  initSuggestionCards();
+
+  // Add click handlers for other sidebar buttons
+  if (btnQuizLibrary) {
+    btnQuizLibrary.addEventListener('click', () => {
+      alert('Quiz Library feature coming soon!');
+    });
+  }
+
+  if (btnProjects) {
+    btnProjects.addEventListener('click', () => {
+      alert('Projects feature coming soon!');
+    });
   }
 
 });
