@@ -635,3 +635,20 @@ html, body {
 .main {
   transform: translateZ(0);
 }
+/* Add this to your CSS */
+.message.typing {
+  opacity: 1 !important;
+  display: flex !important;
+}
+
+.message.bot-message {
+  display: flex;
+}/* Add this to your CSS */
+.message.typing {
+  opacity: 1 !important;
+  display: flex !important;
+}
+
+.message.bot-message {
+  display: flex;
+}
