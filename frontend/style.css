@@ -1,349 +1,234 @@
 /* =========================================================
-   THEME COLORS (Telegram-like Light & Dark)
+   RESET & BASE STYLES
 ========================================================= */
-:root {
-  --bg: #eaf6fb;
-  --panel: #ffffff;
-  --text: #0b2b33;
-  --muted: #6b7280;
-  --accent: #00a8d4;
-  --accent-600: #0091b8;
-  --surface: #f8fcff;
-  --bot-bg: #eefaff;
-  --user-bg: #00a8d4;
-  --sidebar-bg: #f7f7f8;
-  --border-color: #e5e5e7;
-  --user-msg-bg: #f0f0f0;
-  --chat-bg: #ffffff;
-}
-
-body.dark {
-  --bg:#0d1117;
-  --panel:#0f1724;
-  --text:#e6eef4;
-  --muted:#8a9bb2;
-  --accent:#00d5d5;
-  --accent-600:#00c0c0;
-  --surface:#0c1724;
-  --bot-bg:#0b1e2d;
-  --user-bg:#00d5d5;
-  --sidebar-bg: #1e1e20;
-  --border-color: #2d2d30;
-  --user-msg-bg: #2a2a2c;
-  --chat-bg: #0f1724;
-}
-
-/* =========================================================
-   GLOBAL RESET
-========================================================= */
-* { 
-  box-sizing: border-box; 
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html, body {
-  height:100%;
-  font-family: 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
-  background:var(--bg);
-  color:var(--text);
+  height: 100%;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #eaf6fb;
+  color: #0b2b33;
   overflow: hidden;
 }
 
 /* =========================================================
-   MAIN LAYOUT
+   MAIN APP LAYOUT - SIMPLE & CLEAN
 ========================================================= */
 .app {
-  display:flex;
-  height:100vh;
+  display: flex;
+  height: 100vh;
   width: 100vw;
-  gap: 0;
-  overflow: hidden;
 }
 
 /* =========================================================
-   SIDEBAR
+   SIDEBAR - FIXED WIDTH
 ========================================================= */
 .sidebar {
   width: 280px;
-  min-width: 280px;
-  background:var(--sidebar-bg);
-  display:flex;
-  flex-direction:column;
-  border-right: 1px solid var(--border-color);
+  background: #f7f7f8;
+  border-right: 1px solid #e5e5e7;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .sidebar-header {
   padding: 16px;
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
+  border-bottom: 1px solid #e5e5e7;
 }
 
 .new-chat-btn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5e5e7;
+  border-radius: 8px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background-color: var(--panel);
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 15px;
-  font-weight: 500;
-  width: 100%;
-  color: var(--text);
-  border: none;
-}
-
-.new-chat-btn:hover {
-  background-color: var(--surface);
+  gap: 8px;
+  font-size: 14px;
 }
 
 .brand {
   padding: 16px;
   text-align: center;
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
+  border-bottom: 1px solid #e5e5e7;
 }
 
 .brand .tag {
-  color: var(--text);
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: bold;
 }
 
-/* Sidebar Actions */
 .sidebar-actions {
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 16px;
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
+  border-bottom: 1px solid #e5e5e7;
 }
 
 .sidebar-btn {
-  padding: 12px 14px;
-  background: var(--surface);
+  padding: 12px;
+  background: #f8fcff;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   text-align: left;
-  font-size: 14px;
-  transition: 0.2s;
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: var(--text);
+  gap: 8px;
 }
 
-.sidebar-btn:hover {
-  background: rgba(0,168,212,0.12);
-}
-
-/* Chat History */
 .history-section {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
 }
 
 .history-date {
   font-size: 12px;
-  color: var(--muted);
+  color: #6b7280;
   margin: 16px 0 8px;
-  font-weight: 500;
 }
 
 .history-item {
   padding: 12px;
-  border-radius: 12px;
-  cursor: pointer;
+  background: #f8fcff;
+  border-radius: 8px;
   margin-bottom: 4px;
-  font-size: 14px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background-color 0.2s;
-  background: var(--surface);
-  border: 1px solid rgba(0,0,0,0.04);
-  color: var(--text);
-}
-
-.history-item:hover {
-  background-color: rgba(0,168,212,0.12);
-}
-
-.history-item.active {
-  background: rgba(0,168,212,0.15);
-  border-color: var(--accent);
-}
-
-.history-item i {
-  color: var(--muted);
 }
 
 .sidebar-footer {
   padding: 16px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid #e5e5e7;
   font-size: 12px;
-  color: var(--muted);
-  flex-shrink: 0;
+  color: #6b7280;
   text-align: center;
 }
 
 /* =========================================================
-   MAIN CHAT AREA
+   MAIN CONTENT AREA - TAKES REMAINING SPACE
 ========================================================= */
 .main {
   flex: 1;
-  background: var(--chat-bg);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
+  background: white;
+  min-width: 0; /* Crucial for flexbox */
 }
 
-/* Topbars */
+/* Hide mobile topbar on desktop */
 .mobile-topbar {
   display: none;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
 }
 
+/* Desktop topbar */
 .desktop-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 16px 24px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-.app-title {
+  border-bottom: 1px solid #e5e5e7;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
 }
 
 .app-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .chat-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
 
-.action-btn, .icon-btn, .menu-toggle {
+.action-btn {
   background: none;
   border: none;
-  padding: 8px;
-  color: var(--muted);
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s;
+  padding: 8px;
 }
 
-.action-btn:hover, .icon-btn:hover, .menu-toggle:hover {
-  background: var(--surface);
-}
-
-/* Welcome Screen */
+/* =========================================================
+   WELCOME SCREEN - CENTERED CONTENT
+========================================================= */
 .welcome-screen {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px;
-  overflow-y: auto;
-  background: var(--chat-bg);
 }
 
 .welcome-content {
-  max-width: 800px;
   text-align: center;
+  max-width: 600px;
 }
 
 .welcome-title {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: bold;
   margin-bottom: 16px;
-  color: var(--text);
-  line-height: 1.2;
 }
 
 .welcome-subtitle {
   font-size: 1.1rem;
-  color: var(--muted);
-  margin-bottom: 48px;
+  color: #6b7280;
+  margin-bottom: 40px;
   line-height: 1.5;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .suggestions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 .suggestion-card {
-  background-color: var(--panel);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
   padding: 20px;
-  text-align: left;
+  background: white;
+  border: 1px solid #e5e5e7;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s;
-  height: 100%;
+  text-align: left;
 }
 
 .suggestion-card:hover {
-  background-color: var(--surface);
-  border-color: var(--accent);
-  transform: translateY(-2px);
+  border-color: #00a8d4;
 }
 
 .suggestion-title {
-  font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text);
 }
 
 .suggestion-desc {
   font-size: 14px;
-  color: var(--muted);
-  line-height: 1.4;
+  color: #6b7280;
 }
 
-/* Chat Box */
+/* =========================================================
+   CHAT AREA
+========================================================= */
 .chat-box {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  display: flex;
+  display: none; /* Hidden by default */
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .message {
@@ -367,378 +252,180 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 600;
+  font-weight: bold;
   flex-shrink: 0;
 }
 
 .user-avatar {
-  background: var(--user-bg);
+  background: #00a8d4;
   color: white;
 }
 
 .bot-avatar {
-  background: var(--bot-bg);
-  color: var(--text);
-  border: 1px solid var(--border-color);
+  background: #eefaff;
+  color: #0b2b33;
+  border: 1px solid #e5e5e7;
 }
 
 .message-content {
   max-width: 70%;
   padding: 12px 16px;
   border-radius: 16px;
-  line-height: 1.5;
 }
 
 .user-message .message-content {
-  background: var(--user-bg);
+  background: #00a8d4;
   color: white;
   border-bottom-right-radius: 4px;
 }
 
 .bot-message .message-content {
-  background: var(--bot-bg);
-  color: var(--text);
-  border: 1px solid var(--border-color);
+  background: #eefaff;
+  color: #0b2b33;
+  border: 1px solid #e5e5e7;
   border-bottom-left-radius: 4px;
 }
 
-.message-text {
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-
-.message-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.message:hover .message-actions {
-  opacity: 1;
-}
-
-.message-action {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 14px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.message-action:hover {
-  background-color: var(--surface);
-}
-
 /* =========================================================
-   INPUT BAR
+   INPUT AREA
 ========================================================= */
 .input-container {
   padding: 20px;
-  border-top: 1px solid var(--border-color);
-  background: var(--panel);
-  flex-shrink: 0;
+  border-top: 1px solid #e5e5e7;
+  background: white;
 }
 
 .input-box {
   display: flex;
   align-items: flex-end;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  gap: 12px;
   padding: 12px 16px;
-  background-color: var(--surface);
-  box-shadow: var(--shadow);
-  transition: border-color 0.2s;
-}
-
-.input-box:focus-within {
-  border-color: var(--accent);
+  border: 1px solid #e5e5e7;
+  border-radius: 12px;
+  background: #f8fcff;
 }
 
 .message-input {
   flex: 1;
   border: none;
   outline: none;
+  background: transparent;
   resize: none;
   font-size: 16px;
   line-height: 1.5;
-  max-height: 200px;
   min-height: 24px;
-  background: transparent;
-  color: var(--text);
-  font-family: inherit;
-}
-
-.message-input::placeholder {
-  color: var(--muted);
+  max-height: 120px;
 }
 
 .send-button {
-  background-color: var(--accent);
+  background: #00a8d4;
   color: white;
   border: none;
   border-radius: 8px;
   width: 36px;
   height: 36px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  margin-left: 12px;
   flex-shrink: 0;
-}
-
-.send-button:hover {
-  background-color: var(--accent-600);
 }
 
 .input-actions {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  flex-shrink: 0;
+  gap: 12px;
   justify-content: center;
+  margin-top: 12px;
 }
 
 .input-action {
   background: none;
   border: none;
+  color: #6b7280;
   cursor: pointer;
-  color: var(--muted);
   font-size: 14px;
   padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.input-action:hover {
-  background-color: var(--surface);
 }
 
 /* =========================================================
-   MOBILE TOGGLE BUTTON & OVERLAY
-========================================================= */
-
-/* Mobile menu toggle button */
-.menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 8px;
-  color: var(--text);
-  border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.menu-toggle:hover {
-  background-color: var(--surface);
-}
-
-/* Mobile overlay when sidebar is open */
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 99;
-  display: none;
-}
-
-.sidebar-overlay.active {
-  display: block;
-}
-
-/* =========================================================
-   MOBILE RESPONSIVE
+   MOBILE STYLES
 ========================================================= */
 @media (max-width: 768px) {
-  .app { 
-    padding: 0; 
-    flex-direction: column;
-  }
-
-  /* Show mobile topbar and hide desktop elements */
-  .mobile-topbar { 
-    display: flex; 
-  }
-  
-  .desktop-topbar { 
-    display: none; 
-  }
-  
-  .menu-toggle {
-    display: block;
-  }
-
-  /* Sidebar mobile behavior */
   .sidebar {
     position: fixed;
     left: -280px;
     top: 0;
-    width: 280px;
     height: 100%;
     z-index: 1000;
     transition: left 0.3s ease;
   }
-
-  .sidebar.open { 
-    left: 0; 
+  
+  .sidebar.open {
+    left: 0;
   }
-
+  
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+  }
+  
   .sidebar-overlay.active {
     display: block;
   }
-
-  /* Adjust main content for mobile */
-  .main {
-    height: 100vh;
-    width: 100%;
+  
+  .mobile-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e5e7;
   }
-
+  
+  .desktop-topbar {
+    display: none;
+  }
+  
+  .menu-toggle {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
   .welcome-screen {
     padding: 20px;
-    height: calc(100vh - 60px);
-    justify-content: flex-start;
-    padding-top: 40px;
   }
   
   .welcome-title {
     font-size: 2rem;
   }
   
-  .welcome-subtitle {
-    font-size: 1rem;
-    margin-bottom: 30px;
-  }
-  
   .suggestions {
     grid-template-columns: 1fr;
-    gap: 12px;
   }
-
-  .chat-box { 
-    padding: 16px; 
-    height: calc(100vh - 140px);
+  
+  .chat-box {
+    padding: 16px;
   }
   
   .message-content {
     max-width: 85%;
   }
-
-  /* Input area adjustments */
-  .input-container {
-    padding: 16px;
-    position: sticky;
-    bottom: 0;
-    background: var(--panel);
-  }
-}
-
-/* Extra small devices */
-@media (max-width: 480px) {
-  .mobile-topbar {
-    padding: 10px 12px;
-  }
-  
-  .chat-box {
-    padding: 12px 10px;
-    gap: 16px;
-  }
-  
-  .input-container {
-    padding: 12px;
-  }
-  
-  .input-box {
-    padding: 10px 12px;
-  }
-  
-  .message-input {
-    font-size: 14px;
-  }
-  
-  .welcome-screen {
-    padding: 16px;
-  }
-  
-  .welcome-title {
-    font-size: 1.75rem;
-  }
-  
-  .suggestion-card {
-    padding: 16px;
-  }
-  
-  .suggestions {
-    gap: 10px;
-  }
 }
 
 /* =========================================================
-   SEARCH POPUP
+   UTILITY CLASSES
 ========================================================= */
-.search-overlay {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index: 2000;
+.hidden {
+  display: none !important;
 }
 
-.search-overlay.hidden { 
-  display:none; 
-}
-
-.search-box {
-  background:var(--panel);
-  padding:20px;
-  border-radius:14px;
-  display:flex;
-  gap:10px;
-  box-shadow:var(--shadow);
-  width: 90%;
-  max-width: 500px;
-}
-
-.search-box input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-}
-
-.search-box button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* Ensure proper scrolling */
-html, body {
-  overflow: hidden;
-}
-
-.app {
-  overflow: hidden;
-}
-
-.sidebar, .main {
-  overflow: hidden;
+.flex {
+  display: flex;
 }
