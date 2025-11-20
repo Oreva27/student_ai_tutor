@@ -651,3 +651,23 @@ html, body {
 .message.bot-message {
   display: flex;
 }
+
+.chat-box {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.message {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.chat-box[style*="display: none"] {
+  display: flex !important;
+}
+
+.chat-box[style*="display: none i"] {
+  display: flex !important;
+}
