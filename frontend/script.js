@@ -249,64 +249,63 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Auto-resize textarea
     messageInput.style.height = 'auto';
-
     // Typing indicator
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "message bot-message typing";
-    
-    const avatarDiv = document.createElement("div");
-    avatarDiv.classList.add("avatar", "bot-avatar");
-    avatarDiv.textContent = "EB";
-    
-    const contentDiv = document.createElement("div");
-    contentDiv.classList.add("message-content");
-    
-    const textDiv = document.createElement("div");
-    textDiv.classList.add("message-text");
-    textDiv.textContent = "EduSpark is thinking...";
-    
-    contentDiv.appendChild(textDiv);
-    typingDiv.appendChild(avatarDiv);
-    typingDiv.appendChild(contentDiv);
-    chatBox.appendChild(typingDiv);
+const typingDiv = document.createElement("div");
+typingDiv.className = "message bot-message typing";
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+const avatarDiv = document.createElement("div");
+avatarDiv.classList.add("avatar", "bot-avatar");
+avatarDiv.textContent = "EB";
 
-    try {
-      const backendUrl = window.location.origin.startsWith("file://")
-        ? "http://127.0.0.1:8000"
-        : window.location.origin;
+const contentDiv = document.createElement("div");
+contentDiv.classList.add("message-content");
 
-      const response = await fetch(`${backendUrl}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message,
-          session_id: currentSessionId
-        })
-      });
+const textDiv = document.createElement("div");
+textDiv.classList.add("message-text");
+textDiv.textContent = "EduSpark is thinking...";
 
-      const data = await response.json();
-      typingDiv.remove();
+contentDiv.appendChild(textDiv);
+typingDiv.appendChild(avatarDiv);
+typingDiv.appendChild(contentDiv);
+chatBox.appendChild(typingDiv);
 
-      const formatted = data.html;
-      const plain = data.response || data.reply || "⚠️ No reply";
+chatBox.scrollTop = chatBox.scrollHeight;
 
-      if (formatted) {
-        addMessage("bot", formatted);
-        saveMessage("bot", formatted);
-      } else {
-        addMessage("bot", plain);
-        saveMessage("bot", plain);
-      }
+try {
+  const backendUrl = window.location.origin.startsWith("file://")
+    ? "http://127.0.0.1:8000"
+    : window.location.origin;
 
-    } catch (err) {
-      typingDiv.remove();
-      const msg = "⚠️ Server unreachable.";
-      addMessage("bot", msg);
-      saveMessage("bot", msg);
-    }
-  }
+  const response = await fetch(`${backendUrl}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message,
+      session_id: currentSessionId
+    })
+  });
+
+  const data = await response.json();
+  
+  // UPDATE THE TYPING INDICATOR INSTEAD OF REMOVING IT
+  const formatted = data.html;
+  const plain = data.response || data.reply || "⚠️ No reply";
+  const finalResponse = formatted || plain;
+
+  // Update the typing indicator with the actual response
+  textDiv.innerHTML = /<[a-z][\s\S]*>/i.test(finalResponse) ? finalResponse : finalResponse;
+  typingDiv.classList.remove("typing");
+  
+  saveMessage("bot", finalResponse);
+
+} catch (err) {
+  // Update typing indicator with error message
+  textDiv.textContent = "⚠️ Server unreachable.";
+  typingDiv.classList.remove("typing");
+  saveMessage("bot", "⚠️ Server unreachable.");
+}
+
+     }
 
   sendBtn.addEventListener("click", e => {
     e.preventDefault();
