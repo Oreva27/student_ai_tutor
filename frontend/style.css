@@ -11,8 +11,6 @@
   --surface: #f8fcff;
   --bot-bg: #eefaff;
   --user-bg: #00a8d4;
-  --radius: 18px;
-  --shadow: 0 8px 20px rgba(0,0,0,0.06);
   --sidebar-bg: #f7f7f8;
   --border-color: #e5e5e7;
   --user-msg-bg: #f0f0f0;
@@ -49,28 +47,30 @@ html, body {
   font-family: 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
   background:var(--bg);
   color:var(--text);
+  overflow: hidden;
 }
 
 /* =========================================================
-   MAIN LAYOUT - FIXED
+   MAIN LAYOUT
 ========================================================= */
 .app {
   display:flex;
   height:100vh;
+  width: 100vw;
   gap: 0;
   overflow: hidden;
 }
 
 /* =========================================================
-   SIDEBAR (Desktop) - FIXED
+   SIDEBAR
 ========================================================= */
 .sidebar {
   width: 280px;
+  min-width: 280px;
   background:var(--sidebar-bg);
   display:flex;
   flex-direction:column;
   border-right: 1px solid var(--border-color);
-  transition: all 0.3s ease;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -103,9 +103,9 @@ html, body {
 }
 
 .brand {
+  padding: 16px;
   text-align: center;
-  margin-bottom: 10px;
-  padding: 0 16px;
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
@@ -115,12 +115,13 @@ html, body {
   font-weight: 700;
 }
 
-/* Sidebar Actions - FIXED */
+/* Sidebar Actions */
 .sidebar-actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 0 16px 16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
@@ -143,10 +144,10 @@ html, body {
   background: rgba(0,168,212,0.12);
 }
 
-/* Chat History - FIXED */
+/* Chat History */
 .history-section {
   flex: 1;
-  padding: 0 16px 16px;
+  padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -193,10 +194,11 @@ html, body {
   font-size: 12px;
   color: var(--muted);
   flex-shrink: 0;
+  text-align: center;
 }
 
 /* =========================================================
-   MAIN CHAT AREA - FIXED
+   MAIN CHAT AREA
 ========================================================= */
 .main {
   flex: 1;
@@ -204,64 +206,164 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-width: 0; /* Prevents flex overflow */
+  min-width: 0;
 }
 
-.chat-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
+/* Topbars */
+.mobile-topbar {
+  display: none;
   align-items: center;
   justify-content: space-between;
+  padding: 12px 16px;
   background: var(--panel);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
-.chat-title {
-  font-size: 18px;
-  font-weight: 600;
+.desktop-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .chat-actions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
-.action-btn {
+.action-btn, .icon-btn, .menu-toggle {
   background: none;
   border: none;
-  cursor: pointer;
+  padding: 8px;
   color: var(--muted);
-  font-size: 16px;
-  padding: 4px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
 }
 
-.action-btn:hover {
+.action-btn:hover, .icon-btn:hover, .menu-toggle:hover {
+  background: var(--surface);
+}
+
+/* Welcome Screen */
+.welcome-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  overflow-y: auto;
+  background: var(--chat-bg);
+}
+
+.welcome-content {
+  max-width: 800px;
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 48px;
+  line-height: 1.5;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.suggestion-card {
+  background-color: var(--panel);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 100%;
+}
+
+.suggestion-card:hover {
   background-color: var(--surface);
+  border-color: var(--accent);
+  transform: translateY(-2px);
 }
 
+.suggestion-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.suggestion-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Chat Box */
 .chat-box {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
-/* Chat bubbles - Updated design */
 .message {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   max-width: 100%;
 }
 
+.user-message {
+  justify-content: flex-end;
+}
+
+.bot-message {
+  justify-content: flex-start;
+}
+
 .avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -271,35 +373,34 @@ html, body {
 }
 
 .user-avatar {
-  background-color: var(--user-bg);
+  background: var(--user-bg);
   color: white;
 }
 
 .bot-avatar {
-  background-color: var(--bot-bg);
+  background: var(--bot-bg);
   color: var(--text);
   border: 1px solid var(--border-color);
 }
 
 .message-content {
-  flex: 1;
-  padding-top: 4px;
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  line-height: 1.5;
 }
 
 .user-message .message-content {
-  background-color: var(--user-bg);
-  padding: 12px 16px;
-  border-radius: 18px 18px 4px 18px;
-  max-width: 85%;
+  background: var(--user-bg);
   color: white;
+  border-bottom-right-radius: 4px;
 }
 
 .bot-message .message-content {
-  background-color: var(--bot-bg);
-  padding: 12px 16px;
-  border-radius: 4px 18px 18px 18px;
+  background: var(--bot-bg);
+  color: var(--text);
   border: 1px solid var(--border-color);
-  max-width: 85%;
+  border-bottom-left-radius: 4px;
 }
 
 .message-text {
@@ -335,10 +436,10 @@ html, body {
 }
 
 /* =========================================================
-   INPUT BAR - FIXED
+   INPUT BAR
 ========================================================= */
 .input-container {
-  padding: 24px;
+  padding: 20px;
   border-top: 1px solid var(--border-color);
   background: var(--panel);
   flex-shrink: 0;
@@ -402,6 +503,7 @@ html, body {
   gap: 8px;
   margin-top: 12px;
   flex-shrink: 0;
+  justify-content: center;
 }
 
 .input-action {
@@ -417,142 +519,6 @@ html, body {
 
 .input-action:hover {
   background-color: var(--surface);
-}
-
-/* =========================================================
-   WELCOME SCREEN - FIXED
-========================================================= */
-.welcome-screen {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  text-align: center;
-  background: var(--chat-bg);
-  overflow-y: auto;
-}
-
-.welcome-title {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: var(--text);
-  line-height: 1.2;
-}
-
-.welcome-subtitle {
-  font-size: 16px;
-  color: var(--muted);
-  margin-bottom: 40px;
-  max-width: 600px;
-  line-height: 1.5;
-}
-
-.suggestions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  max-width: 600px;
-  width: 100%;
-}
-
-.suggestion-card {
-  background-color: var(--panel);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s;
-  height: 100%;
-}
-
-.suggestion-card:hover {
-  background-color: var(--surface);
-  border-color: var(--accent);
-  transform: translateY(-2px);
-}
-
-.suggestion-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text);
-}
-
-.suggestion-desc {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-/* =========================================================
-   TOPBAR (Mobile + Desktop Combined) - FIXED
-========================================================= */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--panel);
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: var(--shadow);
-  position: relative;
-  z-index: 10;
-  flex-shrink: 0;
-}
-
-/* Hamburger Menu Button */
-.menu-btn {
-  background: none;
-  border: none;
-  font-size: 26px;
-  cursor: pointer;
-  padding: 6px;
-  color: var(--text);
-}
-
-/* App Title Block */
-.app-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none !important;
-  color: var(--text);
-}
-
-.top-logo {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  border-radius: 10px;
-}
-
-.app-name {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--text);
-}
-
-/* Right-side icon button */
-.icon-btn {
-  font-size: 20px;
-  background: none;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  color: var(--text);
-}
-
-/* Hover effect */
-.icon-btn:hover,
-.menu-btn:hover {
-  opacity: 0.75;
 }
 
 /* =========================================================
@@ -592,35 +558,10 @@ html, body {
   display: block;
 }
 
-/* Mobile-specific topbar */
-.mobile-topbar {
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--panel);
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: 90;
-  flex-shrink: 0;
-}
-
-.mobile-topbar .app-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mobile-topbar .app-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
 /* =========================================================
-   MOBILE RESPONSIVE - FIXED
+   MOBILE RESPONSIVE
 ========================================================= */
-@media (max-width: 850px) {
+@media (max-width: 768px) {
   .app { 
     padding: 0; 
     flex-direction: column;
@@ -646,32 +587,52 @@ html, body {
     top: 0;
     width: 280px;
     height: 100%;
-    z-index: 100;
-    transition: 0.3s ease-in-out;
-    border-radius: 0;
-    box-shadow: none;
+    z-index: 1000;
+    transition: left 0.3s ease;
   }
 
   .sidebar.open { 
     left: 0; 
-    box-shadow: 2px 0 20px rgba(0,0,0,0.2);
+  }
+
+  .sidebar-overlay.active {
+    display: block;
   }
 
   /* Adjust main content for mobile */
   .main {
     height: 100vh;
-    border-radius: 0;
     width: 100%;
   }
 
-  .chat-box { 
-    padding: 14px; 
-    height: calc(100vh - 140px);
+  .welcome-screen {
+    padding: 20px;
+    height: calc(100vh - 60px);
+    justify-content: flex-start;
+    padding-top: 40px;
+  }
+  
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1rem;
+    margin-bottom: 30px;
   }
   
   .suggestions {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .chat-box { 
+    padding: 16px; 
+    height: calc(100vh - 140px);
+  }
+  
+  .message-content {
+    max-width: 85%;
   }
 
   /* Input area adjustments */
@@ -681,49 +642,12 @@ html, body {
     bottom: 0;
     background: var(--panel);
   }
-
-  /* Welcome screen adjustments */
-  .welcome-screen {
-    padding: 20px;
-    height: calc(100vh - 60px);
-    justify-content: flex-start;
-    padding-top: 40px;
-  }
-  
-  .welcome-title {
-    font-size: 24px;
-  }
-  
-  .welcome-subtitle {
-    font-size: 14px;
-    margin-bottom: 30px;
-  }
-  
-  /* Make topbar flatter on mobile */
-  .topbar {
-    border-radius: 0;
-    padding: 12px 16px;
-  }
-
-  /* Slightly smaller logo + title on smaller screens */
-  .top-logo {
-    width: 34px;
-    height: 34px;
-  }
-
-  .app-name {
-    font-size: 1.2rem;
-  }
 }
 
 /* Extra small devices */
 @media (max-width: 480px) {
   .mobile-topbar {
     padding: 10px 12px;
-  }
-  
-  .chat-header {
-    padding: 12px 16px;
   }
   
   .chat-box {
@@ -748,11 +672,11 @@ html, body {
   }
   
   .welcome-title {
-    font-size: 20px;
+    font-size: 1.75rem;
   }
   
   .suggestion-card {
-    padding: 12px;
+    padding: 16px;
   }
   
   .suggestions {
@@ -770,7 +694,7 @@ html, body {
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .search-overlay.hidden { 
