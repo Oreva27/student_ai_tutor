@@ -610,32 +610,31 @@ html, body {
 .flex {
   display: flex;
 }
-/* CHROME-SPECIFIC FIXES */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-  /* Chrome-specific fixes */
-  .app {
+  .message.bot-message {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+  }
+  
+  .chat-box {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .message-text {
     -webkit-font-smoothing: antialiased;
   }
-  
-  .sidebar {
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .main {
-    min-width: 0;
-    width: 100%;
-  }
 }
 
-/* Force hardware acceleration for Chrome */
-.sidebar {
-  transform: translateZ(0);
+.message {
+  display: flex !important;
+  opacity: 1 !important;
 }
 
-.main {
-  transform: translateZ(0);
+.message.bot-message {
+  display: flex !important;
 }
-/* Add this to your CSS */
 .message.typing {
   opacity: 1 !important;
   display: flex !important;
