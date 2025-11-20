@@ -24,6 +24,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const closeSearchBtn = document.getElementById("close-search");
 
   /* =========================================================
+       DEBUG FUNCTION
+  ========================================================== */
+  function debugChatVisibility() {
+    console.log('=== CHAT VISIBILITY DEBUG ===');
+    console.log('Welcome screen display:', welcomeScreen ? getComputedStyle(welcomeScreen).display : 'N/A');
+    console.log('Chat box display:', chatBox ? getComputedStyle(chatBox).display : 'N/A');
+    console.log('Chat box visibility:', chatBox ? getComputedStyle(chatBox).visibility : 'N/A');
+    console.log('Current session messages:', sessions[currentSessionId] ? sessions[currentSessionId].length : 0);
+    console.log('================================');
+  }
+
+  /* =========================================================
        MOBILE TOGGLE FUNCTIONALITY
   ========================================================== */
   function initMobileToggle() {
@@ -103,27 +115,54 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* =========================================================
-       TOGGLE WELCOME/CHAT SCREENS
+       TOGGLE WELCOME/CHAT SCREENS - UPDATED
   ========================================================== */
   function showWelcomeScreen() {
-    if (welcomeScreen) welcomeScreen.style.display = 'flex';
-    if (chatBox) chatBox.style.display = 'none';
+    if (welcomeScreen) {
+      welcomeScreen.style.display = 'flex';
+      void welcomeScreen.offsetHeight; // Force reflow
+    }
+    if (chatBox) {
+      chatBox.style.display = 'none';
+    }
   }
 
   function showChatArea() {
-    if (welcomeScreen) welcomeScreen.style.display = 'none';
-    if (chatBox) chatBox.style.display = 'flex';
+    if (welcomeScreen) {
+      welcomeScreen.style.display = 'none';
+      void welcomeScreen.offsetHeight; // Force reflow
+    }
+    if (chatBox) {
+      chatBox.style.display = 'flex';
+      chatBox.style.visibility = 'visible';
+      chatBox.style.opacity = '1';
+      void chatBox.offsetHeight; // Force reflow and repaint
+      chatBox.style.display = 'flex'; // Force reset
+      
+      // Double ensure visibility
+      setTimeout(() => {
+        if (chatBox) {
+          chatBox.style.display = 'flex';
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+      }, 50);
+    }
   }
 
   /* =========================================================
-       RENDER CHAT (UPDATED FOR NEW UI)
+       RENDER CHAT - UPDATED
   ========================================================== */
   function renderChat(sessionId) {
+    if (!chatBox) return;
+    
     chatBox.innerHTML = "";
     const chatHistory = sessions[sessionId] || [];
 
     chatHistory.forEach(msg => addMessage(msg.sender, msg.text));
+    
+    // Force show chat area and ensure visibility
     showChatArea();
+    debugChatVisibility();
   }
 
   function addMessage(sender, text) {
@@ -169,6 +208,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     messageDiv.appendChild(contentDiv);
     chatBox.appendChild(messageDiv);
 
+    // Force visibility and scrolling
+    messageDiv.style.display = 'flex';
+    messageDiv.style.visibility = 'visible';
+    messageDiv.style.opacity = '1';
+    void messageDiv.offsetHeight;
+    
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
@@ -179,7 +224,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* =========================================================
-       RENDER HISTORY PANEL (UPDATED)
+       RENDER HISTORY PANEL
   ========================================================== */
   function renderHistoryPanel() {
     const historyContent = document.querySelector(".history-section");
@@ -212,7 +257,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         highlightActiveSession();
       };
 
-      // Add to today's section (you might want to improve this logic)
+      // Add to today's section
       const todaySection = dateHeaders[0]?.nextElementSibling || historyContent;
       historyContent.insertBefore(historyItem, todaySection);
     });
@@ -237,103 +282,138 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /* =========================================================
-       SENDING MESSAGE
+       SENDING MESSAGE - UPDATED
   ========================================================== */
-async function sendMessage() {
-  const message = messageInput.value.trim();
-  if (!message) return;
+  async function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message) return;
 
-  addMessage("user", message);
-  saveMessage("user", message);
-  messageInput.value = "";
+    // Force show chat area immediately when sending a message
+    showChatArea();
+    debugChatVisibility();
 
-  // Auto-resize textarea
-  messageInput.style.height = 'auto';
+    addMessage("user", message);
+    saveMessage("user", message);
+    messageInput.value = "";
 
-  // Typing indicator
-  const typingDiv = document.createElement("div");
-  typingDiv.className = "message bot-message";
-  typingDiv.style.display = 'flex';
-  
-  const avatarDiv = document.createElement("div");
-  avatarDiv.classList.add("avatar", "bot-avatar");
-  avatarDiv.textContent = "EB";
+    // Auto-resize textarea
+    messageInput.style.height = 'auto';
 
-  const contentDiv = document.createElement("div");
-  contentDiv.className = "message-content";
+    // Check if mobile for browser-specific fixes
+    const isMobile = window.innerWidth <= 768;
 
-  const textDiv = document.createElement("div");
-  textDiv.classList.add("message-text");
-  textDiv.textContent = "EduSpark is thinking...";
+    // Typing indicator
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "message bot-message";
+    typingDiv.style.display = 'flex';
+    typingDiv.style.visibility = 'visible';
+    typingDiv.style.opacity = '1';
+    
+    // Browser-specific styling
+    if (isMobile) {
+      typingDiv.style.webkitTransform = 'translateZ(0)';
+      typingDiv.style.transform = 'translateZ(0)';
+    }
+    
+    const avatarDiv = document.createElement("div");
+    avatarDiv.classList.add("avatar", "bot-avatar");
+    avatarDiv.textContent = "EB";
 
-  contentDiv.appendChild(textDiv);
-  typingDiv.appendChild(avatarDiv);
-  typingDiv.appendChild(contentDiv);
-  chatBox.appendChild(typingDiv);
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "message-content";
 
-  // Force Chrome reflow
-  void typingDiv.offsetHeight;
-  chatBox.scrollTop = chatBox.scrollHeight;
+    const textDiv = document.createElement("div");
+    textDiv.classList.add("message-text");
+    textDiv.textContent = "EduSpark is thinking...";
 
-  try {
-    const backendUrl = window.location.origin.startsWith("file://")
-      ? "http://127.0.0.1:8000"
-      : window.location.origin;
+    contentDiv.appendChild(textDiv);
+    typingDiv.appendChild(avatarDiv);
+    typingDiv.appendChild(contentDiv);
+    chatBox.appendChild(typingDiv);
 
-    const response = await fetch(`${backendUrl}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message,
-        session_id: currentSessionId
-      })
-    });
-
-    const data = await response.json();
-
-    const formatted = data.html;
-    const plain = data.response || data.reply || "⚠️ No reply";
-    const finalResponse = formatted || plain;
-
-    // Update the typing indicator with the actual response
+    // Force reflow
+    void typingDiv.offsetHeight;
+    
+    // Ensure scrolling works across browsers
     setTimeout(() => {
-      if (/<[a-z][\s\S]*>/i.test(finalResponse)) {
-        textDiv.innerHTML = finalResponse;
-      } else {
-        textDiv.textContent = finalResponse;
-      }
-      // Force Chrome repaint
-      void textDiv.offsetHeight;
-    }, 0);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, 100);
 
-    saveMessage("bot", finalResponse);
+    try {
+      const backendUrl = window.location.origin.startsWith("file://")
+        ? "http://127.0.0.1:8000"
+        : window.location.origin;
 
-  } catch (err) {
-    setTimeout(() => {
-      textDiv.textContent = "⚠️ Server unreachable.";
-      void textDiv.offsetHeight;
-    }, 0);
-    saveMessage("bot", "⚠️ Server unreachable.");
+      const response = await fetch(`${backendUrl}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          session_id: currentSessionId
+        })
+      });
+
+      const data = await response.json();
+
+      const formatted = data.html;
+      const plain = data.response || data.reply || "⚠️ No reply";
+      const finalResponse = formatted || plain;
+
+      // Update the typing indicator with the actual response
+      const updateResponse = () => {
+        if (/<[a-z][\s\S]*>/i.test(finalResponse)) {
+          textDiv.innerHTML = finalResponse;
+        } else {
+          textDiv.textContent = finalResponse;
+        }
+        
+        // Force browser repaint
+        void textDiv.offsetHeight;
+        
+        // Ensure chat area stays visible
+        showChatArea();
+        
+        // Final scroll to bottom
+        setTimeout(() => {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }, 50);
+      };
+
+      // Use appropriate timing for different browsers
+      setTimeout(updateResponse, isMobile ? 50 : 0);
+
+      saveMessage("bot", finalResponse);
+
+    } catch (err) {
+      const showError = () => {
+        textDiv.textContent = "⚠️ Server unreachable.";
+        void textDiv.offsetHeight;
+        showChatArea();
+      };
+      
+      setTimeout(showError, isMobile ? 50 : 0);
+      saveMessage("bot", "⚠️ Server unreachable.");
+    }
   }
-}
 
-sendBtn.addEventListener("click", e => {
-  e.preventDefault();
-  sendMessage();
-});
-
-messageInput.addEventListener("keydown", e => {
-  if (e.key === "Enter" && !e.shiftKey) {
+  sendBtn.addEventListener("click", e => {
     e.preventDefault();
     sendMessage();
-  }
-});
+  });
 
-// Auto-resize textarea
-messageInput.addEventListener("input", function() {
-  this.style.height = 'auto';
-  this.style.height = (this.scrollHeight) + 'px';
-});
+  messageInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Auto-resize textarea
+  messageInput.addEventListener("input", function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+  });
+
   /* =========================================================
        NEW CHAT BUTTON
   ========================================================== */
@@ -385,7 +465,6 @@ messageInput.addEventListener("input", function() {
     const text = lastMessage.textContent || lastMessage.innerText;
 
     navigator.clipboard.writeText(text).then(() => {
-      // You could add a toast notification here instead of alert
       alert("Reply copied to clipboard!");
     }).catch(() => {
       alert("Failed to copy to clipboard");
@@ -408,7 +487,6 @@ messageInput.addEventListener("input", function() {
 
     const welcome = `${greeting}! I'm EduSpark — your science study companion. Ask me anything to begin. 🚀`;
 
-    // Don't show welcome message in chat area, just use the welcome screen
     showWelcomeScreen();
   }
 
