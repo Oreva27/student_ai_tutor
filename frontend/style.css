@@ -610,3 +610,28 @@ html, body {
 .flex {
   display: flex;
 }
+/* CHROME-SPECIFIC FIXES */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  /* Chrome-specific fixes */
+  .app {
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  .sidebar {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .main {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* Force hardware acceleration for Chrome */
+.sidebar {
+  transform: translateZ(0);
+}
+
+.main {
+  transform: translateZ(0);
+}
